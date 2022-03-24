@@ -47,11 +47,11 @@ class AuthController extends Controller
         }
         //set sessoion
         $user = User::where('email',$request->email)->first();
+        $data = Mechanic::where('user_id',$user->id)->first();
         if ($user->role == 'owner') {
             $data = CarOwner::where('user_id',$user->id)->first();
         }elseif($user->role == 'mechanic'){
-            $data = Mechanic::where('user_id',$user->id)->first();
-            
+            $data = [];
         }
         Session::put('user',$data);
         //set coocie

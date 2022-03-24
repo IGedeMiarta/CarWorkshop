@@ -14,17 +14,15 @@ class CreateCarRepairsTable extends Migration
     public function up()
     {
         Schema::create('car_repairs', function (Blueprint $table) {
-            $table->id('id_repair');
+            $table->id('id_repairs');
             $table->bigInteger('owner_id')->unsigned();
-            $table->foreign('owner_id')->references('id_car_owner')->on('car_owners');
-            $table->bigInteger('service_id')->unsigned();
-            $table->foreign('service_id')->references('id_service')->on('services');
+            $table->foreign('owner_id')->references('id_car_owners')->on('car_owners');
             $table->bigInteger('mechanic_id')->unsigned();
-            $table->foreign('mechanic_id')->references('id_mechanic')->on('mechanics');
-            $table->dateTime('car_entry_date');
-            $table->string('notes')->nullable();
-            $table->bigInteger('repair_status')->unsigned();
-            $table->foreign('repair_status')->references('id_status')->on('statuses');
+            $table->foreign('mechanic_id')->references('id_mechanics')->on('mechanics');
+            $table->dateTime('car_entry');
+            $table->string('note')->nullable();
+            $table->bigInteger('status_id')->unsigned();
+            $table->foreign('status_id')->references('id_status')->on('statuses');
             $table->timestamps();
         });
     }

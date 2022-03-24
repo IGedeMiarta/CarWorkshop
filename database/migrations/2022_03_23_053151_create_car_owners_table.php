@@ -14,10 +14,11 @@ class CreateCarOwnersTable extends Migration
     public function up()
     {
         Schema::create('car_owners', function (Blueprint $table) {
-            $table->id('id_car_owner');
+            $table->id('id_car_owners');
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
+            $table->string('phone', 20);
+            $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

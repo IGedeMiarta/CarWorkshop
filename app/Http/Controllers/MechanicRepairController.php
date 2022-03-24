@@ -2,23 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\MechanicOrder;
-use App\Mail\Repairstatus;
 use Exception;
+use App\Models\User;
 use App\Models\Status;
 use App\Models\Service;
 use App\Models\CarOwner;
 use App\Models\Mechanic;
 use App\Models\CarRepair;
-use App\Models\CarService;
-use App\Models\User;
+use App\Mail\Repairstatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
-class CarRepairController extends Controller
+class MechanicRepairController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -28,7 +26,9 @@ class CarRepairController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = CarRepair::with('owner','mechanic','status','carService','carService.service')->get();
+            $data = CarRepair::with('owner','mechanic','status','carService','carService.service')
+            ->where('mechanic_id',session()->get('user')->id_mechanics)
+            ->get();
             return DataTables::of($data)
                     ->addIndexColumn()
                     ->addColumn('owner', function($row){
@@ -52,12 +52,15 @@ class CarRepairController extends Controller
                     })
                     ->make(true);
         }
+
+
+
         $data['title']='Car Repair';
         $data['owner']=CarOwner::all();
         $data['status']=Status::all();
         $data['mechanic']=Mechanic::all();
         $data['service']=Service::all();
-        return view('repair.index',$data);
+        return view('repair.mechanic',$data);
     }
 
     /**
@@ -78,45 +81,7 @@ class CarRepairController extends Controller
      */
     public function store(Request $request)
     {
-   
-        //validate data
-        $validate = Validator::make($request->all(), [
-            'owner' => 'required',
-            'mechanic' => 'required',
-            'service' => 'required|array|min:1',
-            'note' => 'max:255',
-            'status' => 'required',
-        ]);
-        if ($validate->fails()) {
-            return response()->json(['errors' => $validate->errors(),'status'=>Response::HTTP_UNPROCESSABLE_ENTITY]);
-        }
-        //create data
-        try {
-            $carRepair = CarRepair::create([
-                'car_entry' => date('Y-m-d' . ' ' . 'H:i:s'),
-                'owner_id' => $request->owner,
-                'mechanic_id' => $request->mechanic,
-                'note' => $request->note,
-                'status_id' => $request->status,
-
-            ]);
-            //create car service
-            $carservice = $request->service;
-            foreach ($carservice as $key => $value) {
-                CarService::create([
-                    'repair_id' => $carRepair->id_repairs,
-                    'service_id' => $carservice[$key],
-                ]);
-            }
-            // send email to mechanic
-            $mechanic = Mechanic::find($request->mechanic);
-            $user = User::find($mechanic->user_id);
-       
-            Mail::to($user->email)->send(new MechanicOrder($mechanic));
-            return response()->json(['message' => 'Data is successfully added','status'=>Response::HTTP_OK]);
-        } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage(),'status'=>Response::HTTP_NOT_IMPLEMENTED]);
-        }
+        //
     }
 
     /**
@@ -127,7 +92,18 @@ class CarRepairController extends Controller
      */
     public function show($id)
     {
-        //
+        //show data by id
+        $data = CarRepair::find($id);
+        if (!$data) {
+            return response()->json([
+                'message'=>'Data not found',
+                'status'=>Response::HTTP_NOT_FOUND
+            ]);
+        }
+        return response()->json([
+            'data'=>$data,
+            'status'=>Response::HTTP_OK
+        ]);
     }
 
     /**
@@ -150,7 +126,7 @@ class CarRepairController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // validate data
+           // validate data
         $validate = Validator::make($request->all(), [
             'note' => 'max:255',
             'status' => 'required',
@@ -161,10 +137,10 @@ class CarRepairController extends Controller
         // update data
         try {
             $carRepair = CarRepair::find($id);
-            $carRepair->update([
-                'note' => $request->note,
-                'status_id' => $request->status,
-            ]);
+            // $carRepair->update([
+            //     'note' => $request->note,
+            //     'status_id' => $request->status,
+            // ]);
             $owner = CarOwner::find($carRepair->owner_id);
             $user = User::find($owner->user_id);
 
@@ -181,7 +157,6 @@ class CarRepairController extends Controller
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage(),'status'=>Response::HTTP_NOT_IMPLEMENTED]);
         }
-
     }
 
     /**

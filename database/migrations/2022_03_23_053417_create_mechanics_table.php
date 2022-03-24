@@ -14,10 +14,11 @@ class CreateMechanicsTable extends Migration
     public function up()
     {
         Schema::create('mechanics', function (Blueprint $table) {
-            $table->id('id_mechanic');
+            $table->id('id_mechanics');
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
+            $table->string('phone', 20);
+            $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

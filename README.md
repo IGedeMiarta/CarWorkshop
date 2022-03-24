@@ -73,6 +73,17 @@ When the car owner is satisfied with the job, he will take back the car and the 
 You Must Make Account in Mailtrap to get to send notification send via SMTP email, where it uses  Mailtrap SMTP Provider.
 
 
+### Documentation Files
+
+
+* [Entity Relationship Diagram](https://cloud.smartdraw.com/share.aspx/?pubDocShare=16C975C9566B9734771877E510F55D076D2)
+* [State machine diagram](https://cloud.smartdraw.com/share.aspx/?pubDocShare=8EAC9001AE988CEF9F1B8496F735B66480C)
+* [Postman collection API](https://documenter.getpostman.com/view/18729202/UVsTq2rT)
+
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+
 
 
 ### Installation

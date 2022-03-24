@@ -123,7 +123,7 @@ class AuthController extends Controller
             ]);
         } catch (JWTException $exception) {
             return response()->json([
-                'success' => false,
+                'response' => false,
                 'message' => 'Sorry, user cannot be logged out'
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

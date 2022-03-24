@@ -81,7 +81,6 @@ class MechanicController extends Controller
             ]);
             //send the email
             $maildata=[
-                'userInvited' => auth()->user()->email,
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => $password,
